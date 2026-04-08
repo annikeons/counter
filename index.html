@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -15,9 +16,12 @@ body {
     font-family: 'Segoe UI', sans-serif;
     text-align: center;
     overflow: hidden;
-    background: linear-gradient(-45deg, #ffd6ec, #cde7ff, #ffc2e2, #d6f0ff);
-    background-size: 400% 400%;
-    animation: gradient 12s ease infinite;
+
+    background: radial-gradient(circle at 20% 30%, #ffd6ec, transparent 40%),
+                radial-gradient(circle at 80% 70%, #cde7ff, transparent 40%),
+                linear-gradient(-45deg, #ffc2e2, #d6f0ff);
+
+    animation: gradient 15s ease infinite;
 }
 
 @keyframes gradient {
@@ -26,50 +30,118 @@ body {
     100% { background-position: 0% 50%; }
 }
 
+/* Glow fondo */
+body::before {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: #ff9ad5;
+    filter: blur(120px);
+    opacity: 0.4;
+    top: 20%;
+    left: 20%;
+    z-index: 0;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: #a0d8ff;
+    filter: blur(120px);
+    opacity: 0.4;
+    bottom: 20%;
+    right: 20%;
+    z-index: 0;
+}
+
+/* Card */
 .container {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 50px;
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 60px;
     border-radius: 30px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255,255,255,0.4);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.25),
+        inset 0 0 20px rgba(255,255,255,0.2);
+
     transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+.container:hover {
+    transform: scale(1.05);
 }
 
 h1 {
     font-size: 2rem;
     color: #ff69b4;
     margin-bottom: 20px;
+    text-shadow: 0 0 12px rgba(255,105,180,0.6);
 }
 
 #countdown {
     font-size: 2.8rem;
     font-weight: bold;
     color: #5b9bd5;
+    text-shadow: 0 0 12px rgba(91,155,213,0.7);
 }
 
 small {
     display: block;
     margin-top: 15px;
-    color: #666;
+    color: #555;
 }
 
-/* Confeti neutro */
+/* Sparkles */
+.sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px white;
+    opacity: 0.8;
+    animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+    from { opacity: 0.2; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1.2); }
+}
+
+/* parti parti */
+.particle {
+    position: absolute;
+    font-size: 22px;
+    opacity: 0.85;
+    cursor: pointer;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%,100% { transform: translateY(0px); }
+    50% { transform: translateY(-25px); }
+}
+
+/* travesura */
 .confetti {
     position: absolute;
-    width: 8px;
-    height: 8px;
-    background-color: #ffffff;
-    opacity: 0.8;
+    font-size: 16px;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 0 8px rgba(255,255,255,0.6);
     animation: fall 3s linear forwards;
 }
 
 @keyframes fall {
-    from {
-        transform: translateY(-10vh) rotate(0deg);
-    }
-    to {
-        transform: translateY(110vh) rotate(720deg);
-    }
+    from { transform: translateY(-10vh) rotate(0deg); }
+    to { transform: translateY(110vh) rotate(360deg); }
 }
 
 .fade-out {
@@ -77,36 +149,87 @@ small {
     opacity: 0;
 }
 </style>
+
 </head>
 
 <body>
 
 <div class="container" id="card">
-    <h1>En construcción 🛠️ <br> Disculpe las molestias</h1>
+    <h1>🚧 En construcción 💖<br>Disculpe las molestias</h1>
     <div id="countdown"></div>
     <small>Hasta el 29 de abril a las 12:00 AM</small>
 </div>
 
 <script>
 
-const targetDate = new Date(2026, 3, 29, 0, 0, 0).getTime();
+const targetDate = new Date(2026, 3, 29, 0,0, 0).getTime();
 const countdownElement = document.getElementById("countdown");
 const card = document.getElementById("card");
 
+/* rallos y senteyas */
+function createSparkles() {
+    for (let i = 0; i < 40; i++) {
+        const s = document.createElement("div");
+        s.classList.add("sparkle");
+
+        s.style.left = Math.random() * 100 + "vw";
+        s.style.top = Math.random() * 100 + "vh";
+
+        document.body.appendChild(s);
+    }
+}
+createSparkles();
+
+/* muekekekkeke */
+function createParticles() {
+    const shapes = ["🐸","🦆"];
+
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement("div");
+        p.classList.add("particle");
+        p.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
+
+        p.style.left = Math.random() * window.innerWidth + "px";
+        p.style.top = Math.random() * window.innerHeight + "px";
+
+        p.addEventListener("mouseenter", () => moveParticle(p));
+        p.addEventListener("click", () => moveParticle(p));
+
+        document.body.appendChild(p);
+    }
+}
+
+function moveParticle(p) {
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight;
+
+    p.style.transition = "all 0.6s ease";
+    p.style.left = x + "px";
+    p.style.top = y + "px";
+}
+
+createParticles();
+
+/* asteriksimo */
 function createConfetti() {
+    const hearts = ["♡","♡","♡","✧"];
+
     for (let i = 0; i < 80; i++) {
         const confetti = document.createElement("div");
         confetti.classList.add("confetti");
+
+        confetti.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
         confetti.style.left = Math.random() * 100 + "vw";
-        confetti.style.backgroundColor =
-            ["#ffd6ec", "#cde7ff", "#ffc2e2", "#d6f0ff"][Math.floor(Math.random() * 4)];
+        confetti.style.fontSize = (12 + Math.random() * 18) + "px";
         confetti.style.animationDuration = (2 + Math.random() * 2) + "s";
+
         document.body.appendChild(confetti);
 
         setTimeout(() => confetti.remove(), 3000);
     }
 }
 
+/* senosvieneee */
 const countdown = setInterval(function() {
 
     const now = new Date().getTime();
