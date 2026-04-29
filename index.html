@@ -7,10 +7,14 @@
 <link rel="shortcut icon" href="laicon.jpg" type="image/x-icon">
 
 <style>
+*{
+box-sizing:border-box;
+}
 
 body{
 margin:0;
-height:100vh;
+min-height:100vh;
+padding:18px;
 display:flex;
 justify-content:center;
 align-items:center;
@@ -34,8 +38,7 @@ animation:gradient 18s ease infinite;
 100%{background-position:0% 50%;}
 }
 
-
-/* dreamy glows */
+/* glows */
 body::before{
 content:"";
 position:absolute;
@@ -62,17 +65,16 @@ right:10%;
 z-index:0;
 }
 
-
-
 /* CARD */
 .container{
 position:relative;
 z-index:1;
 
+width:min(92vw,760px);
+
 background:rgba(255,255,255,.24);
 
-padding:75px;
-
+padding:70px 55px;
 border-radius:42px;
 
 backdrop-filter:blur(35px);
@@ -99,16 +101,10 @@ transform:scale(1.03);
 50%{transform:translateY(-10px);}
 }
 
-
-
-/* TÍTULO como el original pero más dreamy */
 h1{
-font-size:2.45rem;
-font-weight:700;
+font-size:clamp(1.8rem,5vw,2.45rem);
 line-height:1.45;
-letter-spacing:1px;
-margin-bottom:28px;
-
+margin-bottom:25px;
 color:#8ec88f;
 
 text-shadow:
@@ -117,12 +113,10 @@ text-shadow:
 0 0 30px rgba(255,255,255,.35);
 }
 
-
-
-/* COUNTDOWN estilo original glow */
 #countdown{
-font-size:3.2rem;
+font-size:clamp(2rem,7vw,3.2rem);
 font-weight:800;
+line-height:1.4;
 letter-spacing:2px;
 color:#72acd8;
 
@@ -132,20 +126,16 @@ text-shadow:
 }
 
 .unit{
-margin-right:8px;
 display:inline-block;
+margin-right:8px;
 }
-
-
 
 small{
 display:block;
 margin-top:18px;
-font-size:1rem;
+font-size:clamp(.9rem,2vw,1rem);
 color:#5c7461;
 }
-
-
 
 /* sparkles */
 .sparkle{
@@ -173,31 +163,28 @@ transform:scale(1.4);
 }
 }
 
-
-
 /* sapitos */
 .particle{
 position:absolute;
 font-size:30px;
-opacity:.9;
+opacity:.95;
 cursor:pointer;
+user-select:none;
+touch-action:manipulation;
 
-filter:
-drop-shadow(0 0 10px rgba(255,255,255,.4));
+filter:drop-shadow(0 0 10px rgba(255,255,255,.4));
 
 animation:float 6s ease-in-out infinite;
 }
 
 @keyframes float{
 0%,100%{
-transform:translateY(0px);
+transform:translateY(0);
 }
 50%{
 transform:translateY(-28px);
 }
 }
-
-
 
 /* confetti */
 .confetti{
@@ -216,10 +203,50 @@ transform:translateY(110vh) rotate(360deg);
 }
 }
 
-
 .fade-out{
 transform:scale(1.08);
 opacity:0;
+}
+
+/* responsive */
+@media(max-width:768px){
+
+.container{
+padding:55px 28px;
+border-radius:32px;
+}
+
+.particle{
+font-size:24px;
+}
+
+body::before,
+body::after{
+width:300px;
+height:300px;
+}
+
+}
+
+@media(max-width:480px){
+
+.container{
+padding:42px 22px;
+}
+
+.particle{
+font-size:20px;
+}
+
+.sparkle{
+width:6px;
+height:6px;
+}
+
+.unit{
+margin-right:4px;
+}
+
 }
 
 </style>
@@ -227,12 +254,11 @@ opacity:0;
 <body>
 
 
-
 <div class="container" id="card">
 
 <h1>
-Obra en construcción <br> Patos trabajando 🏗️
-
+Obra en construcción <br>
+Patos trabajando 🏗️
 </h1>
 
 <div id="countdown"></div>
@@ -240,7 +266,6 @@ Obra en construcción <br> Patos trabajando 🏗️
 <small>Hasta el 29 de abril a las 12:00 AM</small>
 
 </div>
-
 
 
 <script>
@@ -255,11 +280,9 @@ const card=
 document.getElementById("card");
 
 
-
+/* sparkles */
 function createSparkles(){
-
 for(let i=0;i<50;i++){
-
 const s=document.createElement("div");
 s.classList.add("sparkle");
 
@@ -267,14 +290,14 @@ s.style.left=Math.random()*100+"vw";
 s.style.top=Math.random()*100+"vh";
 
 document.body.appendChild(s);
-
 }
-
 }
-
 createSparkles();
 
 
+
+/* sapos y patos interactivos */
+const particles=[];
 
 function createParticles(){
 
@@ -283,50 +306,77 @@ const shapes=["🐸","🦆"];
 for(let i=0;i<30;i++){
 
 const p=document.createElement("div");
-
 p.classList.add("particle");
 
 p.innerHTML=
 shapes[Math.floor(Math.random()*shapes.length)];
 
-p.style.left=
-Math.random()*window.innerWidth+"px";
+randomPosition(p);
 
-p.style.top=
-Math.random()*window.innerHeight+"px";
-
+/* desktop */
 p.addEventListener(
 "mouseenter",
 ()=>moveParticle(p)
 );
 
+/* click */
 p.addEventListener(
 "click",
 ()=>moveParticle(p)
 );
 
+/* mobile tap */
+p.addEventListener(
+"touchstart",
+function(e){
+e.preventDefault();
+moveParticle(p);
+}
+);
+
 document.body.appendChild(p);
+particles.push(p);
 
 }
 
 }
 
+function randomPosition(p){
+p.style.left=
+Math.random()*
+(window.innerWidth-60)+"px";
+
+p.style.top=
+Math.random()*
+(window.innerHeight-60)+"px";
+}
 
 function moveParticle(p){
 
-const x=Math.random()*window.innerWidth;
-const y=Math.random()*window.innerHeight;
+const x=
+Math.random()*
+(window.innerWidth-80);
 
-p.style.transition="all .6s ease";
+const y=
+Math.random()*
+(window.innerHeight-80);
+
+p.style.transition=
+"all .55s ease";
 
 p.style.left=x+"px";
 p.style.top=y+"px";
-
 }
 
 createParticles();
 
 
+/* si cambia tamaño pantalla recoloca */
+window.addEventListener("resize",()=>{
+particles.forEach(p=>{
+randomPosition(p);
+});
+});
 
 
 /* luciernagas */
@@ -364,7 +414,6 @@ glow.remove();
 
 
 
-
 function createConfetti(){
 
 const hearts=["♡","✧","✿","❀"];
@@ -378,13 +427,11 @@ c.classList.add("confetti");
 c.innerHTML=
 hearts[Math.floor(Math.random()*hearts.length)];
 
-c.style.left=Math.random()*100+"vw";
+c.style.left=
+Math.random()*100+"vw";
 
 c.style.fontSize=
 (14+Math.random()*18)+"px";
-
-c.style.animationDuration=
-(2+Math.random()*2)+"s";
 
 document.body.appendChild(c);
 
@@ -393,7 +440,6 @@ c.remove();
 },3000);
 
 }
-
 }
 
 
@@ -407,7 +453,6 @@ new Date().getTime();
 
 const distance=
 targetDate-now;
-
 
 if(distance<=0){
 
@@ -425,34 +470,25 @@ window.location.href=
 return;
 }
 
+const days=Math.floor(distance/(1000*60*60*24));
 
-const days=
-Math.floor(distance/(1000*60*60*24));
-
-const hours=
-Math.floor(
-(distance%(1000*60*60*24))/
-(1000*60*60)
+const hours=Math.floor(
+(distance%(1000*60*60*24))/(1000*60*60)
 );
 
-const minutes=
-Math.floor(
-(distance%(1000*60*60))/
-(1000*60)
+const minutes=Math.floor(
+(distance%(1000*60*60))/(1000*60)
 );
 
-const seconds=
-Math.floor(
+const seconds=Math.floor(
 (distance%(1000*60))/1000
 );
 
-
-
 countdownElement.innerHTML=
 `<span class="unit">${days}d</span>
- <span class="unit">${hours}h</span>
- <span class="unit">${minutes}m</span>
- <span class="unit">${seconds}s</span>`;
+<span class="unit">${hours}h</span>
+<span class="unit">${minutes}m</span>
+<span class="unit">${seconds}s</span>`;
 
 },1000);
 
